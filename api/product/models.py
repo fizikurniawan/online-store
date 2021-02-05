@@ -6,7 +6,7 @@ from api.common.models import BaseModelGeneric, File
 
 class Category(BaseModelGeneric):
     display_name = models.CharField(max_length=150)
-    short_name = models.SlugField(max_length=150)
+    short_name = models.SlugField(max_length=300)
     thumbnail = models.ForeignKey(File, on_delete=models.CASCADE)
 
     class Meta:
