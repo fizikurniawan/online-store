@@ -1,0 +1,36 @@
+version: "3"
+services:
+  db:
+    image: "postgis/postgis"
+    ports:
+      - "5432"
+    environment:
+      - "POSTGRES_HOST_AUTH_METHOD=trust"
+      - POSTGRES_DB=bumdes_db
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+  web:
+    build: .
+    environment:
+      # production mode
+      - ALLOWED_HOST=bumdes-be-staging.bbri.io
+      - PRODUCTION=True
+      - DEBUG=False
+      - SECRET_KEY=93jss88(*sad*:(
+
+      # db env
+      - DB_NAME=online_shop_db
+      - DB_USER=postgres
+      - DB_PASSWORD=postgres
+      - DB_HOST=db
+      - DB_PORT=5432
+    ports:
+      - "1234:8000"
+    depends_on:
+      - db
+    links:
+      - db:db
+volumes:
+  postgres_data:
