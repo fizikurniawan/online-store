@@ -19,7 +19,9 @@ class Product(BaseModelGeneric):
     display_name = models.CharField(max_length=300)
     price = models.DecimalField(decimal_places=2, max_digits=19)
     is_available = models.BooleanField(default=True)
-    stock = models.PositiveIntegerField(default=0)
+    stock = models.PositiveIntegerField(default=0)  # all stocks
+    stock_available = models.PositiveIntegerField(
+        default=0)  # stock remaining
     description = models.TextField(blank=True, null=True)
     thumbnail = models.ForeignKey(File, on_delete=models.CASCADE)
 
@@ -36,3 +38,25 @@ class ProductMedia(BaseModelGeneric):
     class Meta:
         verbose_name = _("ProductMedia")
         verbose_name_plural = _("ProductMedias")
+
+
+class FlashSale(BaseModelGeneric):
+    event_name = models.CharField(max_length=200)
+    start_event = models.DateTimeField()
+    end_event = models.DateTimeField()
+    is_published = models.BooleanField(default=False)
+
+    class Meta:
+        verbose_name = _("FlashSale")
+        verbose_name_plural = _("FlashSales")
+
+
+class ProductFlashSale(BaseModelGeneric):
+    flash_sale = models.ForeignKey(FlashSale, on_delete=models.CASCADE)
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    price = models.DecimalField(decimal_places=2, max_digits=20)
+    stock = models.IntegerField(default=1)
+
+    class Meta:
+        verbose_name = _("ProductFlashSale")
+        verbose_name_plural = _("ProductFlashSales")

@@ -1,6 +1,8 @@
+from django.utils import timezone
+
 from rest_framework import serializers
 
-from api.product.models import Product, ProductMedia
+from api.product.models import Product, ProductMedia, ProductFlashSale
 
 
 class MediaReadSerializer(serializers.ModelSerializer):
@@ -19,6 +21,7 @@ class MediaReadSerializer(serializers.ModelSerializer):
 class ProductReadSerializer(serializers.ModelSerializer):
     media = serializers.SerializerMethodField()
     thumbnail = serializers.SerializerMethodField()
+    flash_sale = serializers.SerializerMethodField()
 
     def get_media(self, instance):
         media_queryset = ProductMedia.objects.filter(
@@ -35,6 +38,35 @@ class ProductReadSerializer(serializers.ModelSerializer):
             return instance.thumbnail.file.url
         return None
 
+    def get_flash_sale(self, instance):
+        flash_sale_product = ProductFlashSale.objects.filter(
+            product=instance,
+            flash_sale__start_event__lte=timezone.now(),
+            flash_sale__end_event__gte=timezone.now()
+        ).last()
+
+        if flash_sale_product:
+            return {
+                'price': flash_sale_product.price,
+                'stock': flash_sale_product.stock
+            }
+
+        return None
+
     class Meta:
         model = Product
-        fields = ('uuid', 'display_name', 'thumbnail', 'media')
+        fields = ('uuid', 'display_name', 'thumbnail',
+                  'media', 'stock_available', 'price', 'flash_sale')
+
+
+class ProductLiteSerializer(serializers.ModelSerializer):
+    thumbnail = serializers.SerializerMethodField()
+
+    def get_thumbnail(self, instance):
+        if instance.thumbnail and instance.thumbnail.file:
+            return instance.thumbnail.file.url
+        return None
+
+    class Meta:
+        model = Product
+        fields = ('uuid', 'display_name', 'thumbnail')

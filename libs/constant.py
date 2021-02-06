@@ -5,3 +5,7 @@ BILL_STATUS_CHOICES = (
     ('success', _('Success')),
     ('expired', _('Expired')),
 )
+
+PAYMENT_METHOD_CHOICES = (
+    ('transfer', _('Transfer'))
+)
