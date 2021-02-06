@@ -9,5 +9,6 @@ router.register(r'upload', UploadFileViewSet, 'upload')
 urlpatterns = [
     url(r'^authentication/', include('api.authentication.urls',)),
     url(r'^product/', include('api.product.urls',)),
+    url(r'^payment/', include('api.payment.urls',)),
     url(r'^common/', include(router.urls))
 ]

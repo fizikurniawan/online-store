@@ -51,7 +51,8 @@ INSTALLED_APPS = [
 
     # apps
     'api.common',
-    'api.product'
+    'api.product',
+    'api.payment'
 ]
 
 MIDDLEWARE = [

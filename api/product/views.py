@@ -1,17 +1,19 @@
 from rest_framework import status
-from rest_framework.viewsets import mixins
+from rest_framework.viewsets import mixins, GenericViewSet
 from rest_framework.response import Response
 from rest_framework.filters import SearchFilter
 from slugify import slugify
 
 from libs.viewsets import ListAndRetrieveViewSet
 from libs.permission import IsAuthenticatedOrReadOnly
-from api.product.models import Category, Product, ProductMedia
+from api.product.models import Category, Product, ProductMedia, ProductFlashSale, FlashSale
 
 from .serializers.read.category import CategoryReadSerializer, CategoryDetailReadSerializer
 from .serializers.read.product import ProductReadSerializer
+from .serializers.read.flash_sale import FlashSaleReadSerializer
 from .serializers.write.category import CategoryWriteSerializer
 from .serializers.write.product import ProductWriteSerializer
+from .serializers.write.flash_sale import RegisterFlashSaleProductSerializer
 
 
 class CategoryViewSet(ListAndRetrieveViewSet, mixins.CreateModelMixin):
@@ -144,4 +146,58 @@ class ProductViewSet(ListAndRetrieveViewSet, mixins.CreateModelMixin):
         return Response({
             'status': 'success',
             'message': 'success create product'
+        }, status=status.HTTP_201_CREATED)
+
+
+class ProductFlashSaleViewSet(GenericViewSet, mixins.ListModelMixin, mixins.CreateModelMixin):
+    def get_serializer_class(self):
+        action = self.action
+        serializer_class = FlashSaleReadSerializer
+        if action == 'create':
+            serializer_class = RegisterFlashSaleProductSerializer
+
+        return serializer_class
+
+    def list(self, request):
+        queryset = FlashSale.objects.filter(
+            deleted_at__isnull=True
+        ).last()
+
+        serializer_class = self.get_serializer_class()
+        serializer = serializer_class(queryset)
+
+        return Response(serializer.data)
+
+    def create(self, request):
+        serializer_class = self.get_serializer_class()
+        serializer = serializer_class(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        validated_data = serializer.validated_data
+        # create event
+        products = validated_data.pop('products')
+        flash_sale = FlashSale.objects.create(**validated_data)
+
+        # add product to event
+        for product_object in products:
+            product = Product.objects.get(
+                deleted_at__isnull=True,
+                uuid=product_object.get('product_uuid')
+            )
+
+            # create flash sale product
+            product_fs = ProductFlashSale.objects.create(
+                product=product,
+                flash_sale=flash_sale,
+                price=product_object.get('price'),
+                stock=product_object.get('stock')
+            )
+
+            # decrement stock available on product
+            product.stock_available -= product_fs.stock
+            product.save()
+
+        return Response({
+            'status': 'success',
+            'message': 'success create flash sale'
         }, status=status.HTTP_201_CREATED)
