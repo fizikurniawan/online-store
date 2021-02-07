@@ -31,7 +31,7 @@ class CheckOutViewSet(GenericViewSet, mixins.CreateModelMixin):
         inv = Invoice.objects.create(
             user=user,
             number=self.generate_invoice(),
-            status='pending',
+            status='created',
             expired_pay=one_hour_next
         )
 

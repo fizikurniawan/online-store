@@ -45,6 +45,9 @@ class InvoiceViewSet(ListAndRetrieveViewSet):
 
     @action(detail=True, methods=['post'], url_path='pay', serializer_class=PayInvoiceSerializer)
     def pay_invoice(self, request, uuid=None):
+        '''
+        Available payment method 'transfer'
+        '''
         instance = self.get_object()
         if instance.user != request.user:
             raise Http404
@@ -53,6 +56,11 @@ class InvoiceViewSet(ListAndRetrieveViewSet):
             return Response({
                 'status': 'error',
                 'message': 'Invoice has already paid.'
+            }, status=status.HTTP_400_BAD_REQUEST)
+        elif instance.status == 'checking':
+            return Response({
+                'status': 'error',
+                'message': 'Invoice has already checking by admin'
             }, status=status.HTTP_400_BAD_REQUEST)
 
         serializer_class = self.get_serializer_class()
@@ -64,7 +72,7 @@ class InvoiceViewSet(ListAndRetrieveViewSet):
             invoice=instance, deleted_at__isnull=True)
         product_unavailable = []
         for item in inv_items:
-            product_object = Product.objects.get(uuid=product.uuid)
+            product_object = Product.objects.get(uuid=item.product.uuid)
             if product_object.stock < item.qty:
                 product_unavailable.append({
                     'uuid': product_object.uuid,
@@ -79,7 +87,9 @@ class InvoiceViewSet(ListAndRetrieveViewSet):
                 'data': product_unavailable
             }, status=status.HTTP_400_BAD_REQUEST)
 
-        # response list payment method
+        # set status to 'checking'
+        instance.status = 'checking'
+        instance.save()
 
         return Response({
             'status': 'success',

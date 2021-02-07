@@ -48,7 +48,8 @@ class CartWriteSerializer(serializers.ModelSerializer):
         if flash_sale_product and flash_sale_product.stock > qty:
             price = flash_sale_product.price
 
-        total_stock = (flash_sale_product.stock if flash_sale_product else 0) + product_exists.stock
+        total_stock = (
+            flash_sale_product.stock if flash_sale_product else 0) + product_exists.stock
         if qty > total_stock:
             raise serializers.ValidationError({
                 'qty': f'Qty greather than available stock. Available stock {total_stock}'
@@ -87,8 +88,8 @@ class PayInvoiceSerializer(serializers.Serializer):
     payment_method = serializers.CharField()
 
     def validate(self, data):
-        payment_method = data.get('payment_method')
-        if payment_method not in [i[0] for i in PAYMENT_METHOD_CHOICES]:
+        payment_method_str = data.get('payment_method')
+        if payment_method_str not in [i for i in PAYMENT_METHOD_CHOICES]:
             raise serializers.ValidationError({
                 'payment_method': 'Invalid payment method'
             })
