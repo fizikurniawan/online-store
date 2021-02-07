@@ -38,6 +38,15 @@
 docker-compose up
 ```
 
+## Demo
+1. URL
+    http://128.199.140.245:8000/docs/
+2. Availabe User
+    - Superuser
+        superuser@user.com::superuser
+    - User Basic
+        user1@user.com::user1
+
 ## Analysis
 1. Describe what you think happened that caused those bad reviews during our 12.12 event and why it happened
     - Based on the cases described above. In my opinion, the causes of out stock are as follows:
