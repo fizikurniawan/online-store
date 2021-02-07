@@ -27,23 +27,23 @@ class CheckOutViewSet(GenericViewSet, mixins.CreateModelMixin):
         cart_uuids = serializer.validated_data.get('cart_uuids')
 
         # create invoice with pending status
+        one_hour_next = datetime.now + timedelta(hours=1)
         inv = Invoice.objects.create(
             user=user,
             number=self.generate_invoice(),
-            status='pending'
+            status='pending',
+            expired_pay=one_hour_next
         )
 
         # create invoice items
         real_chart_uuids = []
-        one_hour_next = datetime.now + timedelta(hours=1)
         for cart_uuid in cart_uuids:
             cart_uuid = cart_uuid.get('uuid')
             cart = Cart.objects.get(uuid=cart_uuid)
             item = InvoiceItem.objects.filter(
                 invoice=inv,
                 product=cart.product,
-                user=user,
-                expired_pay=one_hour_next
+                user=user
             ).last()
 
             if item:
