@@ -27,7 +27,7 @@ class CheckOutViewSet(GenericViewSet, mixins.CreateModelMixin):
         cart_uuids = serializer.validated_data.get('cart_uuids')
 
         # create invoice with pending status
-        one_hour_next = datetime.now + timedelta(hours=1)
+        one_hour_next = datetime.now() + timedelta(hours=1)
         inv = Invoice.objects.create(
             user=user,
             number=self.generate_invoice(),
