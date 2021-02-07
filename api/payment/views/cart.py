@@ -11,9 +11,9 @@ from ..serializers.read import CartReadSerializer
 from ..serializers.write import CartWriteSerializer
 
 
-class CartViewSet(GenericViewSet, mixins.ListModelMixin, mixins.CreateModelMixin, mixins.DestroyModelMixin, mixins.UpdateModelMixin):
+class CartViewSet(GenericViewSet, mixins.ListModelMixin, mixins.CreateModelMixin, mixins.DestroyModelMixin):
     lookup_field = 'uuid'
-    permission_classes = [IsAuthenticated,]
+    permission_classes = [IsAuthenticated, ]
     queryset = Cart.objects.filter(
         deleted_at__isnull=True
     )
@@ -54,7 +54,8 @@ class CartViewSet(GenericViewSet, mixins.ListModelMixin, mixins.CreateModelMixin
         # increment qty if already exists on cart
         cart = Cart.objects.filter(product=product, user=request.user).last()
         if not cart:
-            Cart.objects.create(product=product, qty=qty, user=request.user, price=price)
+            Cart.objects.create(product=product, qty=qty,
+                                user=request.user, price=price)
         else:
             cart.qty += qty
             cart.price = price
@@ -69,4 +70,9 @@ class CartViewSet(GenericViewSet, mixins.ListModelMixin, mixins.CreateModelMixin
         if instance.user != request.user:
             raise Http404
 
-        return ('Test')
+        instance.delete()
+
+        return Response({
+            'status': 'success',
+            'message': 'success deleted checkout'
+        }, status=status.HTTP_204_NO_CONTENT)
