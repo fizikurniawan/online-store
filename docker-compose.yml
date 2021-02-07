@@ -16,8 +16,8 @@ services:
     environment:
       # production mode
       - ALLOWED_HOST='localhost'
-      - PRODUCTION=True
-      - DEBUG=False
+      - PRODUCTION=False
+      - DEBUG=True
       - SECRET_KEY=93jss88(*sad*:(
       - BASE_URL='http://127.0.0.1:8080'
 
