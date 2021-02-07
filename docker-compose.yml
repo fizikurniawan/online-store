@@ -6,7 +6,7 @@ services:
       - "5432"
     environment:
       - "POSTGRES_HOST_AUTH_METHOD=trust"
-      - POSTGRES_DB=bumdes_db
+      - POSTGRES_DB=online_shop_db
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
     volumes:
