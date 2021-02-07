@@ -1,5 +1,6 @@
 import random
 from uuid import uuid4
+from datetime import datetime, timedelta
 
 from rest_framework.viewsets import GenericViewSet, mixins
 from rest_framework.permissions import IsAuthenticated
@@ -34,13 +35,15 @@ class CheckOutViewSet(GenericViewSet, mixins.CreateModelMixin):
 
         # create invoice items
         real_chart_uuids = []
+        one_hour_next = datetime.now + timedelta(hours=1)
         for cart_uuid in cart_uuids:
             cart_uuid = cart_uuid.get('uuid')
             cart = Cart.objects.get(uuid=cart_uuid)
             item = InvoiceItem.objects.filter(
                 invoice=inv,
                 product=cart.product,
-                user=user
+                user=user,
+                expired_pay=one_hour_next
             ).last()
 
             if item:
