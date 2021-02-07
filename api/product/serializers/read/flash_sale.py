@@ -11,7 +11,7 @@ class ProductFlashSaleSerializer(serializers.ModelSerializer):
         return {
             'uuid': product_instance.uuid,
             'display_name': product_instance.display_name,
-            'thumbnail': product_instance.thumbnail.file.url
+            'thumbnail': product_instance.thumbnail.get_url()
             if product_instance.thumbnail and product_instance.thumbnail.file else None
         }
 

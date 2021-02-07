@@ -10,7 +10,7 @@ class MediaReadSerializer(serializers.ModelSerializer):
 
     def get_url(self, instance):
         if instance.file and instance.file.file:
-            return instance.file.file.url
+            return instance.file.get_url()
         return None
 
     class Meta:
@@ -35,7 +35,7 @@ class ProductReadSerializer(serializers.ModelSerializer):
 
     def get_thumbnail(self, instance):
         if instance.thumbnail and instance.thumbnail.file:
-            return instance.thumbnail.file.url
+            return instance.thumbnail.get_url()
         return None
 
     def get_flash_sale(self, instance):
@@ -64,7 +64,7 @@ class ProductLiteSerializer(serializers.ModelSerializer):
 
     def get_thumbnail(self, instance):
         if instance.thumbnail and instance.thumbnail.file:
-            return instance.thumbnail.file.url
+            return instance.thumbnail.get_url()
         return None
 
     class Meta:

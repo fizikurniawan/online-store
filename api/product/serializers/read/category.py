@@ -8,7 +8,7 @@ class CategoryReadSerializer(serializers.ModelSerializer):
 
     def get_thumbnail(self, obj):
         if obj.thumbnail and obj.thumbnail.file:
-            return obj.thumbnail.file.url
+            return obj.thumbnail.get_url()
         return None
 
     class Meta:
@@ -22,7 +22,7 @@ class CategoryDetailReadSerializer(serializers.ModelSerializer):
 
     def get_thumbnail(self, instance):
         if instance.thumbnail and instance.thumbnail.file:
-            return instance.thumbnail.file.url
+            return instance.thumbnail.get_url()
         return None
 
     def get_products(self, instance):

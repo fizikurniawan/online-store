@@ -1,7 +1,10 @@
 import uuid
 from django.db import models
+from django.conf import settings
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
+
+BASE_URL = getattr(settings, 'BASE_URL')
 
 
 class BaseModelGeneric(models.Model):
@@ -39,6 +42,11 @@ class File(BaseModelGeneric):
         null=True
     )
     description = models.TextField(blank=True, null=True)
+
+    def get_url(self):
+        if self.file and self.file.url:
+            return BASE_URL+'/static/upload' + self.file.url
+        return None
 
     class Meta:
         verbose_name = _("File")

@@ -15,10 +15,11 @@ services:
     build: .
     environment:
       # production mode
-      - ALLOWED_HOST=bumdes-be-staging.bbri.io
+      - ALLOWED_HOST='localhost'
       - PRODUCTION=True
       - DEBUG=False
       - SECRET_KEY=93jss88(*sad*:(
+      - BASE_URL='http://127.0.0.1:8080'
 
       # db env
       - DB_NAME=online_shop_db

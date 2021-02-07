@@ -26,7 +26,7 @@ SECRET_KEY = 'k!kzv9ly0q*oluu#5l!gg0+(c2q@os*_dy=tycfo8%ag^@-b*t'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = bool(os.getenv('DEBUG', 'True'))
 PRODUCTION = bool(os.getenv('PRODUCTION', 'False'))
-BASE_URL = 'http://127.0.0.1:8000'
+BASE_URL = os.getenv('BASE_URL', 'http://127.0.0.1:8000')
 
 ALLOWED_HOSTS = ['*']
 CORS_ORIGIN_ALLOW_ALL = True
